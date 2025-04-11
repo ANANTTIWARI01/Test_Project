@@ -29,7 +29,7 @@ function DisplayQuestion({ question, storingAnswer }) {
 
         })}
       </div>
-      <Link to="/">Quit Quiz</Link>
+      <Link to="/">Quit Quiz.</Link>
     </>
   );
 }
