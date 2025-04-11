@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuthUser } from "../context/UserAuthProvider"; // Assuming a UserAuth context exists
+import { useAuthUser } from "../context/UserAuthProvider"; 
 import instance from "../../../axiosConfig";
 
 function UserLogin() {
@@ -15,7 +15,6 @@ function UserLogin() {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
-// console.log(form);
 
   async function handleSubmit(e) {
     e.preventDefault();

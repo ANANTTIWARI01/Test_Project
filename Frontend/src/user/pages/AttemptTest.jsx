@@ -9,7 +9,6 @@ import Dashboard from "./Dashboard";
 function AttemptTest() {
   const navigate = useNavigate();
   const { fetchQuestions } = useAuthUser();
-  // console.log(fetchQuestions);
 
   const { testID } = useParams();
   if (!testID) navigate("/home", { replace: true });
@@ -30,7 +29,6 @@ function AttemptTest() {
       fetchData(testID);
     }
   }, [testID]);
-// console.log(testID);
 
   useEffect(() => {
     let interval;
@@ -60,7 +58,6 @@ function AttemptTest() {
     setQuestions(await fetchQuestions(testID));
     setLoading(false);
   }
-  // console.log(questions);
 
   function changeQuestion() {
     setQuestionNumber((prev) => prev + 1)
@@ -94,7 +91,6 @@ function AttemptTest() {
     }
   }
 
-  // console.log(userAnswers);
   if (!questions || questions.length === 0) {
     return <div>Loading or no questions available...</div>;
 }

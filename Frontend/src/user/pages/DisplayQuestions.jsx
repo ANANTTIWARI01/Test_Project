@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 
 function DisplayQuestion({ question, storingAnswer }) {
   const [selectedOption, setSelectedOption] = useState(null)
-// console.log(question);
 
   useEffect(() => {
     setSelectedOption(null)
