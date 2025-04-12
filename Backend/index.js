@@ -14,7 +14,7 @@ const app = express();
 app.use(express.json()); // data will be in json() format
 
 const corsOptions = {
-    origin: process.env.FRONTEND_URI,
+    origin: "https://test-project-tedp.onrender.com",
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
