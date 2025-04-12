@@ -37,84 +37,100 @@ export async function fetchQuestions(req, res) {
   }
 }
 
+
+export async function getUserScores(req, res) {
+    try {
+        const studentId = req.user.id; // Assuming studentId is available in req.user from authentication middleware
+
+        // Validate studentId
+        if (!studentId) {
+            return res.status(400).json({ message: "Invalid student ID" });
+        }
+
+        // Fetch all quiz attempts for the student
+        const attempts = await quizAttempt.find({ studentId }).populate("testId", "name"); // Populate test name from Test model
+
+        // If no attempts found
+        if (!attempts || attempts.length === 0) {
+            return res.status(404).json({ message: "No scores available for this user." });
+        }
+
+        // Format the scores for the frontend
+        const scores = attempts.map(attempt => ({
+            testId: attempt.testId._id, // Use the populated testId's _id
+            testName: attempt.testId.name, // Use the populated test name
+            score: attempt.score, // User's score
+        }));
+
+        res.status(200).json({ scores });
+    } catch (error) {
+        console.error("Error fetching scores:", error);
+        res.status(500).json({ message: "Failed to retrieve scores", error: error.message });
+    }
+}
+
+// ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 export async function submitTest(req, res) {
-  const testId = req.params.id; 
-  const { name, studentId, response } = req.body;
+  const testID = req.params.id.trim(); 
+  const userAnswers = req.body; 
 
   try {
-      if (!response || !Array.isArray(response)) {
-          return res.status(400).json({ message: "Responses must be provided as an array" });
-      }
-      if (!response.every((r) => r.questionNumber !== undefined && r.answer)) {
-          return res.status(400).json({
-              message: "Each response must contain a questionNumber and answer",
-          });
+      if (!testID) {
+          return res.status(400).json({ message: "Invalid test ID" });
       }
 
-      const test = await Test.findById(testId);
-      if (!test) {
-          return res.status(404).json({ message: "Test not found" });
+      if (!Array.isArray(userAnswers) || userAnswers.length === 0) {
+          return res.status(400).json({ message: "No answers provided" });
       }
-      if (!test.file.questions || test.file.questions.length === 0) {
-          return res.status(400).json({ message: "Test does not contain any questions" });
+
+      const test = await Test.findById(testID);
+      if (!test || !test.file || !Array.isArray(test.file.questions) || test.file.questions.length === 0) {
+          return res.status(404).json({ message: "Test not found or no questions available" });
       }
+
+      const questions = test.file.questions; 
 
       let score = 0;
-      response.forEach((userResponse) => {
-          const question = test.file.questions[userResponse.questionNumber];
-          if (question && question.correct_answer === userResponse.answer) {
-              score += 1;
+      const resultData = userAnswers.map((answer) => {
+          const question = questions[answer.questionNumber];
+
+          if (question) {
+              const isCorrect = question.correct_answer === answer.answer;
+              if (isCorrect) score += 1;
+
+              return {
+                  questionNumber: answer.questionNumber,
+                  userAnswer: answer.answer,
+                  correctAnswer: question.correct_answer,
+                  isCorrect,
+              };
+          } else {
+              return {
+                  questionNumber: answer.questionNumber,
+                  userAnswer: answer.answer,
+                  correctAnswer: null,
+                  isCorrect: false,
+              };
           }
       });
 
-      const attempt = new quizAttempt({
-          name,
-          studentId,
-          testId,
+      const testResult = new quizAttempt({
+          testId: testID, 
+          studentId: req.user.id,
+          name: test.name,
+          answers: resultData,
           score,
-          response,
       });
 
-      await attempt.save();
+      await testResult.save();
 
-      res.status(201).json({ message: "Quiz submitted successfully", attempt });
+      res.status(200).json({
+          message: "Test submitted successfully",
+          score,
+          answers: resultData,
+      });
   } catch (error) {
       console.error("Error submitting test:", error);
-      res.status(500).json({
-          message: "Failed to submit test",
-          error: error.message || "An unexpected error occurred",
-      });
-  }
-}
-
-export async function saveUserScore(req, res) {
-  const { studentId, testId, score } = req.body;
-
-  try {
-    if (!studentId || !testId || score === undefined) {
-      return res.status(400).json({ message: "Invalid data. Please provide studentId, testId, and score." });
-    }
-
-    const existingAttempt = await quizAttempt.findOne({ studentId, testId });
-
-    let savedAttempt;
-    if (existingAttempt) {
-      existingAttempt.score = score;
-      savedAttempt = await existingAttempt.save();
-    } else {
-      const newAttempt = new quizAttempt({
-        name: req.user.name,
-        studentId,
-        testId,
-        score,
-        response: [],
-      });
-      savedAttempt = await newAttempt.save();
-    }
-
-    res.status(200).json({ message: "Score saved successfully", attempt: savedAttempt });
-  } catch (error) {
-    console.error("Error saving user score:", error);
-    res.status(500).json({ message: "Failed to save user score", error: error.message });
+      res.status(500).json({ message: "Internal server error" });
   }
 }
