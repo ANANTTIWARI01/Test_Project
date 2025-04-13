@@ -3,7 +3,7 @@ import instance from "../../../axiosConfig";
 import { useParams, useNavigate } from "react-router-dom";
 
 function UpdateTest() {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [testName, setTestName] = useState("");
@@ -12,7 +12,9 @@ function UpdateTest() {
   useEffect(() => {
     async function fetchTestDetails() {
       try {
-        const response = await instance.get(`/admin/update/${id}`, { withCredentials: true });
+        const response = await instance.get(`/admin/update/${id}`, {
+          withCredentials: true,
+        });
         const test = response.data.test;
         setTestName(test.name);
       } catch (error) {
@@ -32,7 +34,6 @@ function UpdateTest() {
       const formData = new FormData();
       formData.append("file", selectedFile);
       formData.append("name", testName);
-// console.log("FormData being sent:", formData.get("file"), formData.get("name"));
 
       await instance.put(`/admin/update/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -40,30 +41,55 @@ function UpdateTest() {
       });
 
       alert("Test updated successfully!");
-      navigate("/admin/viewTest"); 
+      navigate("/admin/viewTest");
     } catch (error) {
-      console.error("Error updating test:",  error.message);
+      console.error("Error updating test:", error.message);
       alert("Failed to update the test. Please try again.");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1>Update Test</h1>
-      <div>
-        <label>Test Name:</label>
-        <input
-          type="text"
-          value={testName}
-          onChange={(e) => setTestName(e.target.value)}
-        />
+    <div className="flex justify-center items-center min-h-screen bg-gray-900 p-8">
+      <div className="w-full max-w-lg bg-gray-800 text-white rounded-lg shadow-lg p-6">
+        <h1 className="text-2xl font-bold text-center mb-6">Update Test</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="testName" className="block text-sm font-medium mb-2">
+              Test Name:
+            </label>
+            <input
+              type="text"
+              id="testName"
+              value={testName}
+              onChange={(e) => setTestName(e.target.value)}
+              required
+              className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="questionsFile"
+              className="block text-sm font-medium mb-2"
+            >
+              Upload Questions File:
+            </label>
+            <input
+              type="file"
+              id="questionsFile"
+              accept=".json"
+              onChange={handleFileChange}
+              className="w-full px-4 py-2 bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md font-semibold"
+          >
+            Update Test
+          </button>
+        </form>
       </div>
-      <div>
-        <label>Upload Questions File:</label>
-        <input type="file" accept=".json" onChange={handleFileChange} />
-      </div>
-      <button type="submit">Update Test</button>
-    </form>
+    </div>
   );
 }
 

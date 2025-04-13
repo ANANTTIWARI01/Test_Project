@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import instance from "../../../axiosConfig";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +17,6 @@ const navigate = useNavigate()
       return;
     }
 
-    // Create a FormData object
     const formData = new FormData();
     formData.append("name", testName);
     formData.append("file", jsonFile);

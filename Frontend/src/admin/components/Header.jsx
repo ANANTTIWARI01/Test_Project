@@ -4,23 +4,31 @@ import { Link, useNavigate } from "react-router-dom";
 
 function Header() {
   const { isAuthenticated, AdminLogoutHandle } = useAdminAuth();
-  const navigate =useNavigate()
+  const navigate = useNavigate();
 
-  function handleLogout(){
+  function handleLogout() {
     AdminLogoutHandle();
-navigate("/admin/login")
-
+    navigate("/admin/login");
   }
 
-
   return (
-    <header>
-      <h1>Test System Admin Dashboard</h1>
+    <header className="bg-blue-600 text-white px-4 py-4 shadow-md flex justify-between items-center">
+      <h1 className="text-xl font-bold">Test System Admin Dashboard</h1>
       {isAuthenticated ? (
-        <button onClick={()=>handleLogout()}>Logout</button>
+        <button
+          onClick={() => handleLogout()}
+          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md font-semibold"
+        >
+          Logout
+        </button>
       ) : (
-        <li>
-          <Link to="/admin/login">Login</Link>
+        <li className="list-none">
+          <Link
+            to="/admin/login"
+            className="text-white hover:text-gray-200 font-semibold"
+          >
+            Login
+          </Link>
         </li>
       )}
     </header>

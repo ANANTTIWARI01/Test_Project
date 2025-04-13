@@ -1,7 +1,11 @@
+import React from 'react';
+
 function Footer() {
   return (
-    <div>Admin Footer</div>
-  )
+    <div className="bg-gray-800 text-white text-center py-4">
+      <p className="text-sm">© 2025 Your Company. All rights reserved.</p>
+    </div>
+  );
 }
 
-export default Footer
+export default Footer;

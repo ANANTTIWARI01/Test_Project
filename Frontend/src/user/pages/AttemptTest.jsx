@@ -11,7 +11,7 @@ function AttemptTest() {
   const { fetchQuestions } = useAuthUser();
 
   const { testID } = useParams();
-  
+
   if (!testID) navigate("/home", { replace: true });
 
   const [questions, setQuestions] = useState([]);
@@ -20,10 +20,10 @@ function AttemptTest() {
   const [time, setTime] = useState(2);
   const [answerList, setAnswerList] = useState({
     questionNumber: "",
-    answer: ""
-  })
-  const [userAnswers, setUserAnswers] = useState([])
-  const [showDashboard, setShowDashboard] = useState(false)
+    answer: "",
+  });
+  const [userAnswers, setUserAnswers] = useState([]);
+  const [showDashboard, setShowDashboard] = useState(false);
 
   useEffect(() => {
     if (testID) {
@@ -37,10 +37,10 @@ function AttemptTest() {
     interval = setInterval(() => {
       if (time === 1) {
         if (questionNumber >= questions.length - 1) {
-          postingData()
+          postingData();
 
           clearInterval(interval);
-          setShowDashboard(true)
+          setShowDashboard(true);
         } else {
           setTime(2);
           setQuestionNumber((prev) => prev + 1);
@@ -60,18 +60,17 @@ function AttemptTest() {
   }
 
   function changeQuestion() {
-    setQuestionNumber((prev) => prev + 1)
-    setTime(2)
+    setQuestionNumber((prev) => prev + 1);
+    setTime(2);
   }
 
   function storingAnswer(answer) {
     setAnswerList((prev) => ({
-        ...prev,
-        questionNumber, 
-        answer,         
+      ...prev,
+      questionNumber,
+      answer,
     }));
-}
-
+  }
 
   useEffect(() => {
     if (answerList.questionNumber !== "" && answerList.answer !== "") {
@@ -79,35 +78,49 @@ function AttemptTest() {
     }
   }, [answerList]);
 
-
   async function postingData() {
     try {
-       await instance.put("/user/test/submit/" + testID, userAnswers, { withCredentials: true })
-    }
-    catch (error) {
+      await instance.put("/user/test/submit/" + testID, userAnswers, {
+        withCredentials: true,
+      });
+    } catch (error) {
       console.log(error);
     }
   }
 
   if (!questions || questions.length === 0) {
-    return <div>Loading or no questions available...</div>;
-}
-  if (loading) return <div id="loading">LOADING...</div>;
-  if (showDashboard) return <Dashboard userAnswers={userAnswers} />
+    return (
+      <div className="flex justify-center items-center min-h-screen text-lg font-semibold text-gray-500">
+        Loading or no questions available...
+      </div>
+    );
+  }
+  if (loading)
+    return (
+      <div id="loading" className="flex justify-center items-center min-h-screen text-lg font-semibold text-gray-500">
+        LOADING...
+      </div>
+    );
+  if (showDashboard) return <Dashboard userAnswers={userAnswers} />;
   return (
-    <div className="quizBlock">
-        {questions.length > questionNumber ? (
-            <DisplayQuestion
-                question={questions[questionNumber]}
-                storingAnswer={storingAnswer}
-            />
-        ) : (
-            <div>Loading question...</div>
-        )}
-        <button onClick={() => changeQuestion()}>Next Question</button>
-        <h1>{time}</h1>
+    <div className="quizBlock flex flex-col items-center min-h-screen bg-gray-100 p-8">
+      {questions.length > questionNumber ? (
+        <DisplayQuestion
+          question={questions[questionNumber]}
+          storingAnswer={storingAnswer}
+        />
+      ) : (
+        <div className="text-lg font-semibold text-gray-500">Loading question...</div>
+      )}
+      <button
+        onClick={() => changeQuestion()}
+        className="mt-6 py-2 px-4 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600"
+      >
+        Next Question
+      </button>
+      <h1 className="text-2xl font-bold text-gray-800 mt-4">{time}</h1>
     </div>
-);
+  );
 }
 
 export default AttemptTest;

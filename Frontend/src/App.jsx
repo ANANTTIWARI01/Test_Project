@@ -7,7 +7,7 @@ import Login from "./user/pages/Login";
 import Register from "./user/pages/Register";
 import Home from "./user/pages/Home";
 import UserAuthProvider from "./user/context/UserAuthProvider";
-
+import "./App.css"
 import AdminFirst from "./admin/pages/AdminFirst";
 import AdminLogin from "./admin/pages/AdminLogin";
 import AdminHome from "./admin/pages/AdminHome";
