@@ -11,6 +11,7 @@ function AttemptTest() {
   const { fetchQuestions } = useAuthUser();
 
   const { testID } = useParams();
+  
   if (!testID) navigate("/home", { replace: true });
 
   const [questions, setQuestions] = useState([]);
@@ -41,7 +42,6 @@ function AttemptTest() {
           clearInterval(interval);
           setShowDashboard(true)
         } else {
-          console.log(questions.length, questionNumber);
           setTime(2);
           setQuestionNumber((prev) => prev + 1);
         }
@@ -78,13 +78,11 @@ function AttemptTest() {
       setUserAnswers((prev) => [...prev, answerList]);
     }
   }, [answerList]);
-  console.log(userAnswers);
 
 
   async function postingData() {
     try {
-      const response = await instance.put("/user/test/submit/" + testID, userAnswers, { withCredentials: true })
-      console.log(response);
+       await instance.put("/user/test/submit/" + testID, userAnswers, { withCredentials: true })
     }
     catch (error) {
       console.log(error);

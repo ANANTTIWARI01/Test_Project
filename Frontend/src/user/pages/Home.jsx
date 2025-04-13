@@ -4,11 +4,10 @@ import { Link } from "react-router-dom";
 
 function Home() {
     const { fetchTests } = useAuthUser(); 
-
+    
     const [tests, setTests] = useState([]); 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null); 
-
     useEffect(() => {
         async function fetchAndSetTests() {
             try {

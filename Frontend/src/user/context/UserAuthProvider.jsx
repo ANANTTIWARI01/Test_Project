@@ -26,26 +26,23 @@ export const UserAuthProvider = ({ children }) => {
     useEffect(() => {
         userFetchStatus();
     }, [])
-    
-    useEffect(()=>{
+
+    useEffect(() => {
         fetchTests()
-    },[])
+    }, [])
 
     async function fetchTests() {
         try {
             const response = await instance.get("/user/issued-tests", { withCredentials: true })
-            console.log(response.data.tests);
-            
             return response.data.tests
         }
         catch (error) {
             console.log(error);
         }
     }
-    
-    
+
+
     async function fetchQuestions(id) {
-        console.log(id)
         const num = id.trim()
         try {
             const response = await instance.get(`/user/get-questions/ ` + num, { withCredentials: true });
