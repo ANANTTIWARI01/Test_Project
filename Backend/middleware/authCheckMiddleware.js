@@ -26,6 +26,8 @@ dotenv.config();
 
 const authCheckMiddleware = (tokenKey) => (req, res, next) => {
     const token = tokenKey === "admin" ? req.cookies.adminToken : req.cookies.userToken
+    console.log(token);
+    
     if (!token) {
         console.log("token missing");
         return res.status(401).json({ message: "No token provided" });
